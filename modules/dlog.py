@@ -126,6 +126,12 @@ def pohlighellman(a, b, count, simpleDlog=autoshanks):
 
     for (p, e) in factorization:
         g=(count//p)*a
+        if g.isIdentity(): # it may happen that g=O!
+            # ..still to check, but a couple of tests showed that
+            # this works.
+            l[li]=((p**e)-1, p**e)
+            li+=1
+            continue
         A=0*a # 0 in the G group
         bs=range(0, e)
 

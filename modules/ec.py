@@ -400,9 +400,11 @@ class ECPt(object):
 
 
     def __str__(self):
+        if self.isIdentity(): return "O"
         return str([int(self._x), int(self._y)])
 
     def __repr__(self):
+        if self.isIdentity(): return "ECPt.identity()"
         return "ECPt({},{},{})".format(repr(self._EC), self._x, self._y)
 
 
