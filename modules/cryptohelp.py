@@ -140,7 +140,7 @@ def ecdh_init(bytes):
     log(LOG_INFO, "crypto", "using {} as generator".format(str(g)))
     # make sure a is really random in the range 0...#C_K, by choosing a
     # random number that uses twice the bytes of p. (#C_K ~ p+1)
-    log(LOG_INFO, "crypto", "chosing a random integer a")
+    log(LOG_INFO, "crypto", "choosing a random integer a")
     a=random_with_bytes(log2(p)//4)
     ag=a*g
     log(LOG_INFO, "crypto", "chosen {}, a*g is {}".format(a, str(ag)))
@@ -167,7 +167,7 @@ def ecdh_reply(p,g,ag):
     log(LOG_INFO, "crypto", "using the e.c. "+str(g._EC))
     log(LOG_INFO, "crypto", "using the generator "+str(g))
     log(LOG_INFO, "crypto", "a*g="+str(ag))
-    log(LOG_INFO, "crypto", "chosing a random b")
+    log(LOG_INFO, "crypto", "choosing a random b")
     b=random_with_bytes(log2(p)//4)
     bg=b*g
     log(LOG_INFO, "crypto", "chosen {}, b*g is {}".format(b, str(bg)))
