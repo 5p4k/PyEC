@@ -13,53 +13,53 @@ The `ec` module provides support to define and manipulate rational points on ell
 
 Just call the constructor `EC(a,b,c,p)`, providing the three coefficient of the equation and *p*, a prime number that defines the finite field:
 <pre>
-  >>> from modules.ec import *
-	>>> curve = EC(0, 5, 2, 967)
-	>>> str(curve)
-	'y^2==x^3+5x+2 over F_967'
+>>> from modules.ec import *
+>>> curve = EC(0, 5, 2, 967)
+>>> str(curve)
+'y^2==x^3+5x+2 over F_967'
 </pre>
 
 #### Point manipulation
 
 We can generate a point on the curve by calling the constructor `ECPt(curve,x,y)`, or using the method `pickPoint()` of the curve we just defined.
 <pre>
-	>>> P = ECPt(curve, 8, 39)
-	>>> Q = curve.pickPoint()
-	>>> str(P), str(Q)
-	('[8, 39]', '[40, 185]')
+>>> P = ECPt(curve, 8, 39)
+>>> Q = curve.pickPoint()
+>>> str(P), str(Q)
+('[8, 39]', '[40, 185]')
 </pre>
 The operation of addition between points (as well as the multiplication by a scalar value) is implemented into the two builtin operators `+` and `*`. Let's compute *P+Q*, *P+P* and the first multiples of *P*:
 <pre>
-	>>> str( P+Q )
-	'[309, 703]'
-	>>> str( P+P )
-	'[756, 105]'
-	>>> for i in range(2, 5):       # i = 2, 3, 4
-	...     str( i*P )
-	...
-	'[756, 105]'
-	'[157, 602]'
-	'[783, 349]'
-	>>> ( 2*P ) == ( P+P )
-	True
-	>>> str( 345*P )
-	'[697, 843]'
+>>> str( P+Q )
+'[309, 703]'
+>>> str( P+P )
+'[756, 105]'
+>>> for i in range(2, 5):       # i = 2, 3, 4
+...     str( i*P )
+...
+'[756, 105]'
+'[157, 602]'
+'[783, 349]'
+>>> ( 2*P ) == ( P+P )
+True
+>>> str( 345*P )
+'[697, 843]'
 </pre>
 The neutral element *O* can be obtained calling the static method `ECPt.identity()`. To verify if a given point is the identity, you can check the return value of `isIdentity()`, a method of `ECPt`. Let's see an example where we perform basic checks on the identity:
 <pre>
-	>>> O = ECPt.identity()
-	>>> P+O == O+P == P
-	True
-	>>> O == 2*O == O+O == -O == 50*O
-	True
-	>>> str( P-P )
-	'O'
-	>>> R = 41*P
-	>>> S = -41*P
-	>>> ( R+S ).isIdentity()
-	True
-	>>> 0*P == O
-	True
+>>> O = ECPt.identity()
+>>> P+O == O+P == P
+True
+>>> O == 2*O == O+O == -O == 50*O
+True
+>>> str( P-P )
+'O'
+>>> R = 41*P
+>>> S = -41*P
+>>> ( R+S ).isIdentity()
+True
+>>> 0*P == O
+True
 </pre>
 
 #### Order of points and cardinality of the rational points group
@@ -71,20 +71,20 @@ The method that computes the cardinality of the rational points group is based o
 
 Let's try the third algorithm, as the result can be appreciated immediately:
 <pre>
-	>>> curve.cardinality()
-	976
-	>>> othercurve = EC(1, 2, 300, 25169)
-	>>> othercurve.cardinality()
-	25136
-	>>> P = othercurve.pickPoint()
-	>>> str(P), str( 25136*P )
-	('[20982, 1348]', 'O')
+>>> curve.cardinality()
+976
+>>> othercurve = EC(1, 2, 300, 25169)
+>>> othercurve.cardinality()
+25136
+>>> P = othercurve.pickPoint()
+>>> str(P), str( 25136*P )
+('[20982, 1348]', 'O')
 </pre>
 Another method is provided: `enumerateAllPoints()`; it returns a list of all the rational points (relying on `cardinality()` to stop the scanning loop).
 <pre>
-	>>> points = othercurve.enumerateAllPoints()
-	>>> len(points)
-	25136
+>>> points = othercurve.enumerateAllPoints()
+>>> len(points)
+25136
 </pre>
 
 The `dlog` module
@@ -96,27 +96,27 @@ The methods provided here are generic: they work perfectly on any object provide
 
 This algorithm is implemented in two versions, `shanks(a,b,bs,gs)` and `autoshanks(a,b,n)`. The first allows the user to specify the number of baby and giant steps, the seconds instead requires the knowledge of the cardinality *n* of the group used, and sets the number of steps both to *sqrt(n)*.
 <pre>
-	>>> from modules.dlog import autoshanks, pohlighellman
-	>>> Q = 3343*P
-	>>> autoshanks(P, Q, 25136)
-	3343L
+>>> from modules.dlog import autoshanks, pohlighellman
+>>> Q = 3343*P
+>>> autoshanks(P, Q, 25136)
+3343L
 </pre>
 
 #### Pohlig-Hellman's method
 
 The method `pohlighellman(a, b, n)` computes the discrete logarithm using the factorization of *n*. 25136 is small enough for the factorization to be computed quickly:
 <pre>
-	>>> pohlighellman(P, Q, 25136)
-	3343L
+>>> pohlighellman(P, Q, 25136)
+3343L
 </pre>
 Also the method `computeOrder()` of the class `ECPt` relies on Shanks's algorithm. `computeOrder()` returns the order of a point in the rational points group. The method `pickGenerator()` of `EC` takes advantage of both this method and `cardinality()` to find a point with order equal to *#C_k*:
 <pre>
-	>>> P, Q = curve.pickPoint(), othercurve.pickPoint()
-	>>> P.computeOrder(), Q.computeOrder()
-	(122L, 12568L)
-	>>> G = othercurve.pickGenerator()
-	>>> G.computeOrder()  # we expect 25136
-	25136L
+>>> P, Q = curve.pickPoint(), othercurve.pickPoint()
+>>> P.computeOrder(), Q.computeOrder()
+(122L, 12568L)
+>>> G = othercurve.pickGenerator()
+>>> G.computeOrder()  # we expect 25136
+25136L
 </pre>
 
 Cryptographic modules
@@ -127,6 +127,7 @@ Let's see an example of these methods altogether.
 The script can be launched by running `python main.py`; it opens a connection between two machines via TCP/IP, then proceeds with a key exchange as in Diffie-Hellman protocol.
 
 With rational points as group, the choice of the parameters implies the choice of a particular finite field and an elliptic curve on it. The machine that begins key exchange (let's call it *M*) performs the following operations:
+
 1. Chooses a random prime *p*.
 2. Randomly chooses paramteres to define an elliptic curve.
 3. Chooses a random integer *A* and a generator *g* of the rational points group.
@@ -148,7 +149,6 @@ The software allows now the users to type and exchange messages: the inserted te
 
 Follows a sample run of `main.py`.
 
-### The machine *M*
 <pre>
 >>> connect or listen? connect
 >>> ip address (empty=>localhost)? 
@@ -195,9 +195,13 @@ EULERO
 Moduli in Python
 ... ecdh: encrypting 'Moduli in Python'
 ... ecdh: sending '*\xe9\x8eY\x06\xb0)\xec\x96\xc7\xafA\x0eIl\xf2Sa\xce\xb6'...
-</pre>
-### The machine *D*
-<pre>
+
+
+
+
+
+
+
 >>> connect or listen? listen
 >>> choose one of the network interfaces to bind (empty=>loopback lo0):
 	en1	140.105.232.19
